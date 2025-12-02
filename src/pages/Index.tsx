@@ -1,4 +1,5 @@
 import { WebGLShader } from "@/components/ui/web-gl-shader";
+import { ButtonColorful } from "@/components/ui/button-colorful";
 
 const Index = () => {
   return (
@@ -6,12 +7,17 @@ const Index = () => {
       <WebGLShader />
       <div className="relative border border-border/30 p-2 w-full mx-auto max-w-3xl">
         <main className="relative border border-border/30 py-10 overflow-hidden">
-          <h1 className="mb-3 text-hero-foreground text-center text-5xl sm:text-6xl md:text-7xl font-syne font-extrabold tracking-tight lg:text-[clamp(2rem,8vw,7rem)]">
+          <h1 className="mb-3 text-hero-foreground text-center text-5xl sm:text-6xl md:text-7xl font-syne font-light tracking-tight lg:text-[clamp(2rem,8vw,7rem)]">
             Ronok Sheikh
           </h1>
           <p className="text-hero-muted px-6 text-center text-xs md:text-sm lg:text-lg max-w-xl mx-auto">
             I build future-ready digital experiences. Founder at VibeAcademy, specializing in AI Automation, SaaS, and cutting-edge tech solutions. Based in Rajshahi, crafting global impact.
           </p>
+          <div className="mt-8 flex justify-center">
+            <a href="mailto:ronoknoob@gmail.com">
+              <ButtonColorful label="Get in Touch" />
+            </a>
+          </div>
         </main>
       </div>
     </div>
