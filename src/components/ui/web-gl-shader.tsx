@@ -3,47 +3,89 @@
 import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 
-function CSSFallback() {
-  return (
-    <div className="fixed top-0 left-0 w-full h-full bg-background overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background">
-        <div 
-          className="absolute w-[200%] h-1 top-1/2 -left-1/2 bg-gradient-to-r from-transparent via-foreground/80 to-transparent blur-sm animate-wave"
-          style={{ 
-            animation: 'wave 3s ease-in-out infinite',
-            boxShadow: '0 0 40px 20px hsl(var(--foreground) / 0.3)'
-          }}
-        />
-        <div 
-          className="absolute w-[200%] h-0.5 top-1/2 -left-1/2 bg-gradient-to-r from-transparent via-red-500/60 to-transparent blur-[2px]"
-          style={{ 
-            animation: 'wave 3s ease-in-out infinite',
-            animationDelay: '-0.05s',
-            transform: 'translateY(-2px)'
-          }}
-        />
-        <div 
-          className="absolute w-[200%] h-0.5 top-1/2 -left-1/2 bg-gradient-to-r from-transparent via-blue-500/60 to-transparent blur-[2px]"
-          style={{ 
-            animation: 'wave 3s ease-in-out infinite',
-            animationDelay: '0.05s',
-            transform: 'translateY(2px)'
-          }}
-        />
-      </div>
-      <style>{`
-        @keyframes wave {
-          0%, 100% { transform: translateX(0) scaleY(1); }
-          50% { transform: translateX(-10%) scaleY(1.5); }
+// Canvas2D fallback that mimics the WebGL chromatic wave effect
+function Canvas2DFallback() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const animationRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let time = 0
+
+    const resize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+
+    const animate = () => {
+      if (!ctx || !canvas) return
+      
+      const width = canvas.width
+      const height = canvas.height
+      
+      ctx.fillStyle = '#000000'
+      ctx.fillRect(0, 0, width, height)
+
+      const centerY = height / 2
+      time += 0.01
+
+      // Draw the chromatic aberration wave effect
+      for (let x = 0; x < width; x++) {
+        const normalizedX = (x / width) * 2 - 1
+        const distortion = 0.05
+
+        // Calculate wave positions with chromatic aberration
+        const baseWave = Math.sin((normalizedX + time) * 1.0) * 0.5
+        const rWave = Math.sin((normalizedX * (1 + distortion * Math.abs(normalizedX)) + time) * 1.0) * 0.5
+        const bWave = Math.sin((normalizedX * (1 - distortion * Math.abs(normalizedX)) + time) * 1.0) * 0.5
+
+        const yR = centerY + rWave * height * 0.3
+        const yG = centerY + baseWave * height * 0.3
+        const yB = centerY + bWave * height * 0.3
+
+        // Draw glowing lines
+        const drawGlow = (y: number, color: string, intensity: number) => {
+          for (let spread = 30; spread > 0; spread--) {
+            const alpha = (intensity / spread) * 0.8
+            ctx.fillStyle = color.replace('1)', `${alpha})`)
+            ctx.fillRect(x, y - spread, 1, spread * 2)
+          }
         }
-      `}</style>
-    </div>
+
+        drawGlow(yR, 'rgba(255, 50, 50, 1)', 1)
+        drawGlow(yG, 'rgba(255, 255, 255, 1)', 1.2)
+        drawGlow(yB, 'rgba(50, 50, 255, 1)', 1)
+      }
+
+      animationRef.current = requestAnimationFrame(animate)
+    }
+
+    resize()
+    window.addEventListener('resize', resize)
+    animate()
+
+    return () => {
+      window.removeEventListener('resize', resize)
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+    }
+  }, [])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed top-0 left-0 w-full h-full block"
+    />
   )
 }
 
 export function WebGLShader() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [webglSupported, setWebglSupported] = useState(true)
+  const [useFallback, setUseFallback] = useState(false)
   const sceneRef = useRef<{
     scene: THREE.Scene | null
     camera: THREE.OrthographicCamera | null
@@ -61,13 +103,13 @@ export function WebGLShader() {
   })
 
   useEffect(() => {
-    if (!canvasRef.current) return
+    if (!canvasRef.current || useFallback) return
 
-    // Check WebGL support first
+    // Check WebGL support
     const testCanvas = document.createElement('canvas')
     const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl')
     if (!gl) {
-      setWebglSupported(false)
+      setUseFallback(true)
       return
     }
 
@@ -109,8 +151,8 @@ export function WebGLShader() {
     const initScene = () => {
       try {
         refs.scene = new THREE.Scene()
-        refs.renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
-        refs.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        refs.renderer = new THREE.WebGLRenderer({ canvas })
+        refs.renderer.setPixelRatio(window.devicePixelRatio)
         refs.renderer.setClearColor(new THREE.Color(0x000000))
 
         refs.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, -1)
@@ -149,8 +191,8 @@ export function WebGLShader() {
         handleResize()
         return true
       } catch (e) {
-        console.warn('WebGL initialization failed, using fallback', e)
-        setWebglSupported(false)
+        console.warn('WebGL failed, using Canvas2D fallback')
+        setUseFallback(true)
         return false
       }
     }
@@ -189,10 +231,10 @@ export function WebGLShader() {
       }
       refs.renderer?.dispose()
     }
-  }, [])
+  }, [useFallback])
 
-  if (!webglSupported) {
-    return <CSSFallback />
+  if (useFallback) {
+    return <Canvas2DFallback />
   }
 
   return (
