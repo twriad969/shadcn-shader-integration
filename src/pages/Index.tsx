@@ -1,35 +1,19 @@
-import { useState } from "react";
 import { WebGLShader } from "@/components/ui/web-gl-shader";
 import { Button } from "@/components/ui/button";
-import { FontSidebar, TypographySettings } from "@/components/FontSidebar";
 import { ArrowRight, Mail } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const defaultSettings: TypographySettings = {
-  fontFamily: "Syne",
-  fontClass: "font-syne",
-  fontWeight: 400,
-  fontSize: 100,
-  letterSpacing: 0,
-  lineHeight: 1.5,
-  textTransform: "none",
-};
 
 const Index = () => {
-  const [settings, setSettings] = useState<TypographySettings>(defaultSettings);
-
   const textStyle = {
-    fontWeight: settings.fontWeight,
-    fontSize: `${settings.fontSize}%`,
-    letterSpacing: `${settings.letterSpacing}em`,
-    lineHeight: settings.lineHeight,
-    textTransform: settings.textTransform as React.CSSProperties["textTransform"],
+    fontWeight: 400,
+    fontSize: "150%",
+    letterSpacing: "-0.03em",
+    lineHeight: 1.5,
+    textTransform: "capitalize" as const,
   };
 
   return (
-    <div className={cn("relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden", settings.fontClass)}>
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden font-playfair">
       <WebGLShader />
-      <FontSidebar settings={settings} onSettingsChange={setSettings} />
       
       <div className="relative border border-border/30 p-2 w-full mx-auto max-w-3xl">
         <main className="relative border border-border/30 py-10 overflow-hidden">
