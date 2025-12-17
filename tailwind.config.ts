@@ -15,6 +15,15 @@ export default {
     extend: {
       fontFamily: {
         syne: ['Syne', 'sans-serif'],
+        playfair: ['Playfair Display', 'serif'],
+        'space-grotesk': ['Space Grotesk', 'sans-serif'],
+        outfit: ['Outfit', 'sans-serif'],
+        'dm-sans': ['DM Sans', 'sans-serif'],
+        jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+        manrope: ['Manrope', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
