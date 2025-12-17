@@ -15,7 +15,7 @@ const Index = () => {
             I build future-ready digital experiences. Founder at VibeAcademy, specializing in AI Automation, SaaS, and cutting-edge tech solutions. Based in Rajshahi, crafting global impact.
           </p>
           <div className="mt-8 flex justify-center">
-            <a href="mailto:ronoknoob@gmail.com">
+            <a href="mailto:tasinfahimun@gmail.com">
               <Button className="group" variant="secondary">
                 <Mail className="-ms-1 me-2 opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
                 Email
