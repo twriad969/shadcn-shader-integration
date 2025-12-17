@@ -1,14 +1,21 @@
+import { useState } from "react";
 import { WebGLShader } from "@/components/ui/web-gl-shader";
 import { Button } from "@/components/ui/button";
+import { FontSidebar } from "@/components/FontSidebar";
 import { ArrowRight, Mail } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
+  const [selectedFont, setSelectedFont] = useState("font-syne");
+
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden">
+    <div className={cn("relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden", selectedFont)}>
       <WebGLShader />
+      <FontSidebar selectedFont={selectedFont} onFontChange={setSelectedFont} />
+      
       <div className="relative border border-border/30 p-2 w-full mx-auto max-w-3xl">
         <main className="relative border border-border/30 py-10 overflow-hidden">
-          <h1 className="mb-3 text-hero-foreground text-center text-5xl sm:text-6xl md:text-7xl font-syne font-light tracking-tight lg:text-[clamp(2rem,8vw,7rem)]">
+          <h1 className="mb-3 text-hero-foreground text-center text-5xl sm:text-6xl md:text-7xl font-light tracking-tight lg:text-[clamp(2rem,8vw,7rem)]">
             Fahimun Tasin
           </h1>
           <p className="text-hero-muted px-6 text-center text-xs md:text-sm lg:text-lg max-w-xl mx-auto">
